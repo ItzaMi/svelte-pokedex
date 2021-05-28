@@ -24,6 +24,7 @@
     "tailwindcss": "^2.1.2"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "sirv-cli": "^1.0.0"
   }
 }
