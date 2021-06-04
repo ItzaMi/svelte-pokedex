@@ -13,6 +13,7 @@
   let pokemons = [];
   let pokemonWithAdditionalInfo;
   let isModalOpen = false;
+  let isLoading = true;
   let pokemonToOpen;
 
   pokemonStore.subscribe((value) => {
@@ -25,6 +26,7 @@
     );
     const result = await res.json();
     pokemons = result.results;
+    isLoading = false;
 
     if (pokemons.length > 0) {
       for (const pokemon of pokemons) {
@@ -58,13 +60,13 @@
   };
 </script>
 
-<main class="py-20 bg-gray-50">
+<main class={`py-20 bg-gray-50 ${isLoading ? "h-screen" : ""}`}>
   <h1 class="text-4xl font-bold text-center">
     <span class="text-gray-800">Svelte</span>
     <span class="text-red-500">Pokedex</span>
   </h1>
   <div class="w-4/5 m-auto mt-10 grid sm:grid-cols-3 grid-cols-1 gap-20">
-    {#if pokemonWithAdditionalInfo.length === numberOfPokemonsToFetch}
+    {#if !isLoading}
       {#each pokemonWithAdditionalInfo.slice(0, numberOfPokemonsToShow) as pokemon}
         <div
           class="relative h-72 bg-white rounded-lg shadow-lg flex flex-col justify-between items-center overflow-hidden group"
@@ -107,8 +109,6 @@
             </div>
           </div>
         </div>
-      {:else}
-        <p>loading...</p>
       {/each}
     {:else}
       <div class="relative h-72 bg-white rounded-lg shadow-lg animate-pulse" />
@@ -116,7 +116,7 @@
       <div class="relative h-72 bg-white rounded-lg shadow-lg animate-pulse" />
     {/if}
   </div>
-  {#if numberOfPokemonsToShow < pokemonWithAdditionalInfo.length}
+  {#if !isLoading && numberOfPokemonsToShow < pokemonWithAdditionalInfo.length}
     <div class="mt-10 flex justify-center items-center">
       <button
         on:click={() => (numberOfPokemonsToShow = numberOfPokemonsToShow + 12)}
