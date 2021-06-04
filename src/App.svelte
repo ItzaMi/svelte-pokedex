@@ -5,8 +5,10 @@
 
   import Star from "./components/icons/Star.svelte";
   import ChevronRight from "./components/icons/ChevronRight.svelte";
-  import Close from "./components/icons/Close.svelte";
 
+  import Modal from "./components/Modal.svelte";
+
+  let numberOfPokemonsToFetch = 100;
   let pokemons = [];
   let pokemonWithAdditionalInfo;
   let isModalOpen = false;
@@ -17,7 +19,9 @@
   });
 
   onMount(async () => {
-    const res = await fetch("https://pokeapi.co/api/v2/pokemon");
+    const res = await fetch(
+      `https://pokeapi.co/api/v2/pokemon?limit=${numberOfPokemonsToFetch}`
+    );
     const result = await res.json();
     pokemons = result.results;
 
@@ -59,15 +63,17 @@
     <span class="text-red-500">Pokedex</span>
   </h1>
   <div class="w-4/5 m-auto mt-10 grid sm:grid-cols-3 grid-cols-1 gap-20">
-    {#if pokemonWithAdditionalInfo.length}
+    {#if pokemonWithAdditionalInfo.length === numberOfPokemonsToFetch}
       {#each pokemonWithAdditionalInfo as pokemon}
         <div
           class="relative h-72 bg-white rounded-lg shadow-lg flex flex-col justify-between items-center overflow-hidden group"
         >
           <img
-            src={pokemon.sprites.front_default}
+            src={pokemon["sprites"]["other"]["official-artwork"][
+              "front_default"
+            ]}
             alt={pokemon.name}
-            class="w-40 mb-10"
+            class="w-40 mt-4"
           />
           <div
             class="absolute w-full h-full transform translate-y-3/4 p-4 bg-red-600 text-center text-white transition-all duration-700 ease-in-out group-hover:translate-y-0"
@@ -103,19 +109,13 @@
       {:else}
         <p>loading...</p>
       {/each}
+    {:else}
+      <div class="relative h-72 bg-white rounded-lg shadow-lg animate-pulse" />
+      <div class="relative h-72 bg-white rounded-lg shadow-lg animate-pulse" />
+      <div class="relative h-72 bg-white rounded-lg shadow-lg animate-pulse" />
     {/if}
   </div>
   {#if isModalOpen}
-    <div
-      class="fixed top-1/2 left-1/2 transform translate -translate-y-2/4 -translate-x-2/4  h-screen w-screen bg-gray-200 bg-opacity-50 backdrop-filter backdrop-blur flex justify-center items-center"
-    >
-      <Close
-        additionalClass="absolute top-5 right-5 stroke-current text-black text-opacity-50 transition-all duration-500 ease-in-out hover:text-opacity-100 hover:cursor-pointer"
-        {closePokemonModal}
-      />
-      <div class="h-5/6 w-4/6 bg-white rounded-lg shadow-lg">
-        <p>{pokemonToOpen[0].name}</p>
-      </div>
-    </div>
+    <Modal {closePokemonModal} pokemonToOpen={pokemonToOpen[0]} />
   {/if}
 </main>
