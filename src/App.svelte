@@ -9,6 +9,7 @@
   import Modal from "./components/Modal.svelte";
 
   let numberOfPokemonsToFetch = 100;
+  let numberOfPokemonsToShow = 12;
   let pokemons = [];
   let pokemonWithAdditionalInfo;
   let isModalOpen = false;
@@ -64,7 +65,7 @@
   </h1>
   <div class="w-4/5 m-auto mt-10 grid sm:grid-cols-3 grid-cols-1 gap-20">
     {#if pokemonWithAdditionalInfo.length === numberOfPokemonsToFetch}
-      {#each pokemonWithAdditionalInfo as pokemon}
+      {#each pokemonWithAdditionalInfo.slice(0, numberOfPokemonsToShow) as pokemon}
         <div
           class="relative h-72 bg-white rounded-lg shadow-lg flex flex-col justify-between items-center overflow-hidden group"
         >
@@ -115,6 +116,17 @@
       <div class="relative h-72 bg-white rounded-lg shadow-lg animate-pulse" />
     {/if}
   </div>
+  {#if numberOfPokemonsToShow < pokemonWithAdditionalInfo.length}
+    <div class="mt-10 flex justify-center items-center">
+      <button
+        on:click={() => (numberOfPokemonsToShow = numberOfPokemonsToShow + 12)}
+        type="button"
+        class="py-2 px-4 rounded bg-red-600 text-white font-bold transition-all duration-700 ease-in-out hover:bg-red-900 focus:outline-none"
+      >
+        Load More
+      </button>
+    </div>
+  {/if}
   {#if isModalOpen}
     <Modal {closePokemonModal} pokemonToOpen={pokemonToOpen[0]} />
   {/if}
